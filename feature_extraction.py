@@ -328,9 +328,15 @@ def find_cars(img, svc, X_scaler,scale = 1,x_start_stop=[None, None], y_start_st
         y_start_stop[0] = 0
     if y_start_stop[1] == None:
         y_start_stop[1] = img.shape[0]
+    if x_start_stop[0] == None:
+        x_start_stop[0] = 0
+    if x_start_stop[1] == None:
+        x_start_stop[1] = img.shape[1]
     ystart = y_start_stop[0]
     ystop  = y_start_stop[1]
-    img_tosearch = img[ystart:ystop,:,:]
+    xstart = x_start_stop[0]
+    xstop  = x_start_stop[1]
+    img_tosearch = img[ystart:ystop,xstart:xstop,:]
     #2) Apply color conversion if other than 'RGB'
     if color_space != 'RGB':
         if color_space == 'HSV':
@@ -396,10 +402,10 @@ def find_cars(img, svc, X_scaler,scale = 1,x_start_stop=[None, None], y_start_st
             xbox_left = np.int(xleft*scale)
             ytop_draw = np.int(ytop*scale)
             win_draw = np.int(window*scale)
-            if test_prediction == 1:
-                cv2.rectangle(draw_img,(xbox_left, ytop_draw+ystart),(xbox_left+win_draw,ytop_draw+win_draw+ystart),(0,0,255),6)
-                on_windows.append(((xbox_left, ytop_draw+ystart),(xbox_left+win_draw,ytop_draw+win_draw+ystart)))
-            window_list.append(((xbox_left, ytop_draw+ystart),(xbox_left+win_draw,ytop_draw+win_draw+ystart)))
+            if test_prediction == 1 and svc.decision_function(test_features) > 1:
+                cv2.rectangle(draw_img,(xbox_left+xstart, ytop_draw+ystart),(xbox_left+win_draw+xstart,ytop_draw+win_draw+ystart),(0,0,255),6)
+                on_windows.append(((xbox_left+xstart, ytop_draw+ystart),(xbox_left+win_draw+xstart,ytop_draw+win_draw+ystart)))
+            window_list.append(((xbox_left+xstart, ytop_draw+ystart),(xbox_left+win_draw+xstart,ytop_draw+win_draw+ystart)))
 
     return draw_img, on_windows, window_list
 

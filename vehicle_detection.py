@@ -85,8 +85,16 @@ class VehicleDetector:
                                              color_space=self.color_space, spatial_size=self.spatial_size,
                                              hist_bins=self.hist_bins, orient=self.orient,
                                              pix_per_cell=self.pix_per_cell, cell_per_block=self.cell_per_block)
+            y_start_stop1 = [self.y_start_stop[0],(self.y_start_stop[1]-100)]
+            draw_img, on_windows1, windows = find_cars(copy_image, self.classifier, self.scaler, scale = self.scale-0.5,
+                                             x_start_stop=self.x_start_stop, y_start_stop=y_start_stop1,
+                                             window=self.xy_window[0], cells_per_step = self.cells_per_step,
+                                             color_space=self.color_space, spatial_size=self.spatial_size,
+                                             hist_bins=self.hist_bins, orient=self.orient,
+                                             pix_per_cell=self.pix_per_cell, cell_per_block=self.cell_per_block)
         heat_map = np.zeros_like(copy_image)
         heat_map = helper.add_heat(heat_map, on_windows)
+        heat_map = helper.add_heat(heat_map, on_windows1)
         self.frame_queue.enqueue(heat_map)
 
         all_frames = self.frame_queue.sum_frames()
